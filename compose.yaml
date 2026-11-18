@@ -1,0 +1,16 @@
+services:
+  web:
+    build: .
+    ports:
+      - '5180:5180'
+    environment:
+      HOST: 0.0.0.0
+      PORT: 5180
+      DATA_DIR: /app/data
+      COOKIE_SECURE: 'false'
+      TRUST_PROXY: '0'
+    volumes:
+      - impression-data:/app/data
+    restart: unless-stopped
+volumes:
+  impression-data:

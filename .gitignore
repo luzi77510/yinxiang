@@ -1,0 +1,12 @@
+node_modules/
+dist/
+dist-pages/
+data/
+.env
+.env.*
+!.env.example
+*.log
+*.sqlite*
+artifacts/
+first-login.txt
+.DS_Store

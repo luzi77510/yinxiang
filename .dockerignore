@@ -1,0 +1,10 @@
+node_modules
+dist
+dist-pages
+.git
+data
+.env
+.env.*
+first-login.txt
+artifacts
+*.log
