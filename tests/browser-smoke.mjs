@@ -8,6 +8,10 @@ const browser = await chromium.launch({
   args: ['--no-sandbox'],
 });
 const base = process.env.TEST_URL || 'http://127.0.0.1:5180/';
+const staticMode =
+  process.env.TEST_STATIC === '1' ||
+  base.includes(':4175') ||
+  new URL(base).hostname.endsWith('.github.io');
 const out = resolve('artifacts');
 await mkdir(out, { recursive: true });
 const page = await browser.newPage({
@@ -65,7 +69,15 @@ try {
     18,
   );
   const id = s.id;
-  if (!base.includes('4175')) {
+  if (staticMode) {
+    const summary = { n: s.result.normalized, r: s.result.result, e: s.result.easterEgg ? 1 : 0 };
+    const token = Buffer.from(JSON.stringify(summary)).toString('base64url');
+    const stranger = await browser.newContext();
+    const sharePage = await stranger.newPage();
+    await sharePage.goto(`${base}#/share/local/${token}`);
+    await sharePage.getByRole('heading', { name: 'TA 的第一印象倾向是' }).waitFor();
+    await stranger.close();
+  } else {
     const response = await page.request.post(new URL(`api/sessions/${id}/share`, base).href, {
       data: {},
     });
@@ -113,7 +125,7 @@ try {
           'real scoring',
           'PNG poster',
           'public share',
-          'admin login and editors',
+          ...(staticMode ? [] : ['admin login and editors']),
         ],
         screenshots: out,
       },
